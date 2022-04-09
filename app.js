@@ -23,7 +23,7 @@ app.use('/api/v1', routes)
 app.use((req, res) => {
     res.status(200).json({
         status: 'failed',
-        message: 'no registered path on here',
+        message: 'this path is not registered',
         routes: {
             method: req.method,
             path: `${req.headers.host}${req.path}`
