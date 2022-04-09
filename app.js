@@ -1,17 +1,29 @@
 // IMPORT MODULE
-const express = require('express')
 require('dotenv/config')
+const express = require('express')
+const morgan = require('morgan')
+
+const routes = require('./routes')
+
+
 
 const app = express()
-
-
 const port = process.env.APP_PORT
 
+// MIDLEWARE
 app.use(express.json())
+app.use(morgan('dev'))
 
-app.get('/', (req, res) => {
+// ROUTES
+app.use('/api/v1', routes)
+
+
+
+// ROUTES HANDLING
+app.use((req, res) => {
     res.status(200).json({
-        status: 'success',
+        status: 'failed',
+        message: 'no registered path on here',
         routes: {
             method: req.method,
             path: `${req.headers.host}${req.path}`
