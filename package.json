@@ -1,0 +1,33 @@
+{
+  "name": "be_api_userproduct",
+  "version": "1.0.0",
+  "description": "backand user login product API",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpjen95/be_api_userProduct.git"
+  },
+  "keywords": [
+    "login",
+    "user",
+    "backand",
+    "product"
+  ],
+  "author": "gandi purna jen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gpjen95/be_api_userProduct/issues"
+  },
+  "homepage": "https://github.com/gpjen95/be_api_userProduct#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.18.0",
+    "sequelize-cli": "^6.4.1"
+  }
+}
