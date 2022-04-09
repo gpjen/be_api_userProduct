@@ -8,7 +8,7 @@ const routes = require('./routes')
 
 
 const app = express()
-const port = process.env.APP_PORT
+const port = process.env.APP_PORT || 3000
 
 // MIDLEWARE
 app.use(express.json())
