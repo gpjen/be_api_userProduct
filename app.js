@@ -2,11 +2,14 @@
 require('dotenv/config')
 const express = require('express')
 const morgan = require('morgan')
+const {
+    sequelize
+} = require('./models')
 
+// IMPORT SCRIPT
 const routes = require('./routes')
 
-
-
+// VARIABELS
 const app = express()
 const port = process.env.APP_PORT || 3000
 
@@ -16,7 +19,6 @@ app.use(morgan('dev'))
 
 // ROUTES
 app.use('/api/v1', routes)
-
 
 
 // ROUTES HANDLING
@@ -33,11 +35,10 @@ app.use((req, res) => {
 
 app.listen(port, async () => {
     try {
-        console.log(`server running on port ${port}`);
+        await sequelize.authenticate()
+        console.log(`success connecting to database`);
     } catch (error) {
-        res.stetus(500).json({
-            status: 'failed',
-            message: error.message
-        })
+        console.log(error.message);
     }
+    console.log(`server running on port ${port}`);
 })
