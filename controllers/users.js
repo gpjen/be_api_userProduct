@@ -1,3 +1,7 @@
+// IMPORT PACKEGE
+const bcrypt = require('bcrypt')
+
+// IMPORT MODELS
 const {
     users
 } = require('../models')
@@ -6,25 +10,46 @@ const {
 exports.userRegister = async (req, res) => {
 
     try {
+        const newData = req.body
+        newData.status = newData.status || 'buyer'
 
         // CHECK DUPLICATE EMAIL
+        let errMsg = []
         const emailCheck = await users.findOne({
             where: {
-                email: req.body.email
-            }
+                email: newData.email
+            },
+            attributes: ['email']
         })
 
-        if (emailCheck) return res.status(400).json({
-            status: 'failed',
-            message: 'email already exist'
+        emailCheck ? errMsg.push('email already exist') : true
+
+        // CHECK DUPLICATE PHONE
+        const phoneCheck = await users.findOne({
+            where: {
+                phone: newData.phone
+            },
+            attributes: ['phone']
         })
+
+        phoneCheck ? errMsg.push('phone number already exist') : true
+
+        if (emailCheck || phoneCheck) {
+            return res.status(400).json({
+                status: 'failed',
+                message: errMsg
+            })
+        }
+
+        // HASH PASSWORD
+        const salt = await bcrypt.genSalt(10)
+        newData.password = await bcrypt.hashSync(newData.password, salt)
 
         // CREATE NEW USERS
-        req.body.status = 'buyer'
-        const newUser = await users.create(req.body)
+        const newUser = await users.create(newData)
         res.status(201).json({
             status: 'success',
-            message: `${newUser.email} successfully added to database`
+            message: `${newUser.name} registered successfully`
         })
     } catch (error) {
         console.log(error.message)
