@@ -22,5 +22,8 @@ module.exports = {
     "database": process.env.DB_PRODUCTION,
     "host": process.env.DB_HOST,
     "dialect": process.env.DB_DIALECT
+  },
+  "define": {
+    "freezeTableName": true
   }
 }
