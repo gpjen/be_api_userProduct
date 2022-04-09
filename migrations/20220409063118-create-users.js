@@ -28,6 +28,13 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
+      status: {
+        type: Sequelize.ENUM('admin', 'buyer', 'seller')
+      },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
