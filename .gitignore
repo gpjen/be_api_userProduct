@@ -1,5 +1,5 @@
-# folder
+# folder ignore updates
 node_modules/
 
-# file
+# file ignore updates
 .env
