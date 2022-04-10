@@ -4,7 +4,8 @@ module.exports = {
         min: 3,
         max: 50,
         messages: {
-            string: "nama tidak valid",
+            required: 'nama wajib diisi',
+            string: 'nama tidak valid',
             stringMin: `nama minimal 3 huruf`,
             stringMax: `nama maksimal 50 huruf`
         }
@@ -12,6 +13,7 @@ module.exports = {
     email: {
         type: 'email',
         messages: {
+            required: 'email wajib diisi',
             email: 'email tidak valid'
         }
     },
@@ -36,14 +38,16 @@ module.exports = {
             required: 'gender wajib diisi',
         },
         custom: (val, err) => {
-            const regEx = /^(laki-laki|perempuan)$/
-            if (!val.match(regEx)) {
+            const regExGender = /^(laki-laki|perempuan)$/
+            if (!val || val == "") {
+
+                return val
+            } else if (!val.match(regExGender)) {
                 err.push({
                     type: 'gender'
                 })
                 return false
             }
-            return val
         }
     },
     password: {
@@ -54,7 +58,36 @@ module.exports = {
             stringMin: 'password mengandung minimal 6 karakter'
         },
         custom: (val, err) => {
-            const regExPass = / /
+            const regExPass = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$/
+            if (!val || val == "") {
+                return val
+            }
+            if (!val.match(regExPass)) {
+                err.push({
+                    type: 'passFormat'
+                })
+                return false
+            }
+
+        }
+    },
+    status: {
+        type: 'string',
+        optional: true,
+        messages: {
+            string: 'status berupa huruf'
+        },
+        custom: (val, err) => {
+            const regExStatus = /^(admin|buyer|seller)$/
+            if (!val || val == "") {
+
+                return val
+            } else if (!val.match(regExStatus)) {
+                err.push({
+                    type: 'statusUser'
+                })
+                return false
+            }
         }
     }
 }
