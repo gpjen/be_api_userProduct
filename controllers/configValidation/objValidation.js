@@ -30,6 +30,7 @@ module.exports = {
                 })
                 return false
             }
+            return val
         }
     },
     jenis_kelamin: {
@@ -40,7 +41,6 @@ module.exports = {
         custom: (val, err) => {
             const regExGender = /^(laki-laki|perempuan)$/
             if (!val || val == "") {
-
                 return val
             } else if (!val.match(regExGender)) {
                 err.push({
@@ -48,6 +48,7 @@ module.exports = {
                 })
                 return false
             }
+            return val
         }
     },
     password: {
@@ -68,7 +69,7 @@ module.exports = {
                 })
                 return false
             }
-
+            return val
         }
     },
     status: {
@@ -80,7 +81,6 @@ module.exports = {
         custom: (val, err) => {
             const regExStatus = /^(admin|buyer|seller)$/
             if (!val || val == "") {
-
                 return val
             } else if (!val.match(regExStatus)) {
                 err.push({
@@ -88,6 +88,7 @@ module.exports = {
                 })
                 return false
             }
+            return val
         }
     }
 }
