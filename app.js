@@ -22,15 +22,21 @@ app.use('/api/v1', routes)
 
 
 // ROUTES HANDLING
-app.use((req, res) => {
-    res.status(200).json({
+app.use((req, res, next) => {
+    const err = new Error(`${req.method} => ${req.headers.host}${req.path} not found`)
+    err.status = 404
+    next(err)
+})
+
+// ERRORS HANDLING
+app.use((err, req, res, next) => {
+    res.locals.message = err.message
+    res.locals.error = req.app.get('env') === 'development' ? err : {}
+    res.status(err.status || 500).json({
         status: 'failed',
-        message: 'this path is not registered',
-        routes: {
-            method: req.method,
-            path: `${req.headers.host}${req.path}`
-        }
+        message: err.message
     })
+
 })
 
 app.listen(port, async () => {
@@ -38,7 +44,10 @@ app.listen(port, async () => {
         await sequelize.authenticate()
         console.log(`success connecting to database`);
     } catch (error) {
-        console.log(error.message);
+        console.log({
+            status: 'failed to connect database',
+            message: error.message
+        });
     }
     console.log(`server running on port ${port}`);
 })
