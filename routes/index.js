@@ -3,7 +3,8 @@ const router = express.Router()
 
 // VALIDATIONS
 const {
-    validationRegister
+    validationRegister,
+    validationLogin
 } = require('../controllers/configValidation/functionCollections')
 
 //USER
@@ -13,6 +14,7 @@ const {
 } = require('../controllers/users')
 
 router.get('/user', getUsers)
-router.post('/user', validationRegister, userRegister)
+router.post('/register', validationRegister, userRegister)
+// router.post('/login', validationLogin, userLogin)
 
 module.exports = router

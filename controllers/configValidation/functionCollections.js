@@ -1,5 +1,5 @@
 // IMPORT PACKAGE
-const Validator = require('fastest-validator')
+const Validator = require('express-validator')
 const {
     users
 } = require('../../models')
@@ -8,10 +8,13 @@ const {
 const v = new Validator({
     useNewCustomCheckerFunction: true,
     messages: {
+        required: "'{field}' wajib diisi'",
+        stringMin: "panjang '{field}' minimal {actual}'",
+        stringMax: "panjang '{field}' maksimal {actual}'",
         phoneNumber: 'format telepon tidak didukung ex: +62821-0000-0000 / 6282100000000',
         gender: 'gender tidak didukung ex: laki-laki / perempuan',
         passFormat: 'password harus mengandung huruf besar, huruf kecil dan angka',
-        statusUser: 'status user tidak diketahui'
+        statusUser: 'status user tidak diketahui',
     }
 })
 
@@ -35,36 +38,54 @@ exports.validationRegister = async (req, res, next) => {
         jenis_kelamin,
         password,
         status
-
     }
     const check = v.compile(schema)
-    const error = check(req.body)
+    let errorReq = check(req.body)
 
-    // CHECK DUPLICATE EMAIL
-    let errMsg = []
-    const emailCheck = await users.findOne({
-        where: {
-            email: req.body.email
-        },
-        attributes: ['email']
-    })
+    try {
+        // CHECK DUPLICATE EMAIL
+        const emailCheck = await users.findOne({
+            where: {
+                email: req.body.email
+            }
+        })
+        // CHECK DUPLICATE PHONE
+        const phoneCheck = await users.findOne({
+            where: {
+                phone: req.body.phone
+            }
+        })
+        if (emailCheck) {
+            errorReq = [...errorReq, {
+                type: 'dataEmail',
+                field: 'email',
+                message: 'email already exist'
+            }]
+        }
+        if (phoneCheck) {
+            errorReq = [...errorReq, {
+                type: 'dataPhone',
+                field: 'phone',
+                message: 'phone number already exist'
+            }]
+        }
 
-    emailCheck ? error.push('email already exist') : true
+        // SEND ERROR VALIDATION
+        if (errorReq !== true || dataError.length > 0) return res.status(400).json({
+            status: 'failed',
+            error: errorReq
+        })
 
-    // CHECK DUPLICATE PHONE
-    const phoneCheck = await users.findOne({
-        where: {
-            phone: req.body.phone
-        },
-        attributes: ['phone']
-    })
+        next()
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+}
 
-    phoneCheck ? error.push('phone number already exist') : true
+// FALIDATION LOGIN
+exports.validationLogin = (req, res, next) => {
 
 
-    if (error !== true) return res.status(400).json({
-        status: 'failed',
-        error
-    })
     next()
 }
