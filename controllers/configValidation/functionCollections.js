@@ -1,5 +1,8 @@
 // IMPORT PACKAGE
 const Validator = require('fastest-validator')
+const {
+    users
+} = require('../../models')
 
 // SUPORT VARIABLE AND CUSTOM MESSAGE
 const v = new Validator({
@@ -24,7 +27,7 @@ const {
 
 
 // VALIDATION REGISTER
-validationRegister = (data) => {
+exports.validationRegister = async (req, res, next) => {
     const schema = {
         name,
         email,
@@ -35,15 +38,33 @@ validationRegister = (data) => {
 
     }
     const check = v.compile(schema)
-    return check(data)
+    const error = check(req.body)
 
+    // CHECK DUPLICATE EMAIL
+    let errMsg = []
+    const emailCheck = await users.findOne({
+        where: {
+            email: req.body.email
+        },
+        attributes: ['email']
+    })
+
+    emailCheck ? error.push('email already exist') : true
+
+    // CHECK DUPLICATE PHONE
+    const phoneCheck = await users.findOne({
+        where: {
+            phone: req.body.phone
+        },
+        attributes: ['phone']
+    })
+
+    phoneCheck ? error.push('phone number already exist') : true
+
+
+    if (error !== true) return res.status(400).json({
+        status: 'failed',
+        error
+    })
+    next()
 }
-
-console.log('result => ', validationRegister({
-    name: 'gandi jen',
-    email: 'gpj@gmail.com',
-    phone: '0821-9855-4482',
-    jenis_kelamin: 'laki-laki',
-    password: 'Ambon33n',
-    status: ''
-}));
