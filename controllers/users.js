@@ -66,7 +66,7 @@ exports.getUserById = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      data,
+      data: data || `Id.${id}, has no data`,
     });
   } catch (error) {
     console.log(error.message);
@@ -75,3 +75,16 @@ exports.getUserById = async (req, res, next) => {
 };
 
 // delete user by id
+exports.delUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const data = await users.destroy({ where: { id } });
+    res.status(200).json({
+      status: data > 0 ? "success" : "failed",
+      message: `${data} data deleted`,
+    });
+  } catch (error) {
+    console.log("==> ", error.message);
+    next(error);
+  }
+};
