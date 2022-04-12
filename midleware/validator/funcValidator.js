@@ -1,4 +1,5 @@
 // IMPORT PACKAGE
+const { promise } = require("bcrypt/promises");
 const { body, param, validationResult } = require("express-validator");
 
 //IMPORT MODELS
@@ -13,9 +14,12 @@ module.exports = {
       .bail()
       .isString()
       .withMessage("The name must be string")
+      .toLowerCase()
       .matches(/^[a-zA-Z]+\.?\s?([a-zA-Z]+\.?\s?)+$/)
       .withMessage("Invalid name, must not contain numbers or symbols"),
+
     body("email")
+      .toLowerCase()
       .notEmpty()
       .withMessage("The email cant empty")
       .bail()
@@ -28,6 +32,7 @@ module.exports = {
         }
       })
       .withMessage("The email already exist"),
+
     body("password")
       .isLength({ min: 6 })
       .withMessage("minimum character length 6")
@@ -36,12 +41,28 @@ module.exports = {
       .withMessage(
         "The password must contain uppercase, lowercase and numbers"
       ),
+
     body("phone")
-      .isLength({ min: 8 })
-      .withMessage("phone number length at least 8 digits")
-      .bail(),
-    // body("jenis_kelamin"),
-    // body("status"),
+      .matches(/^[0-9\+-]+\.?\s?([0-9]+\.?\s?)+$/)
+      .withMessage("phone number isnt valid")
+      .bail()
+      .custom(async (value) => {
+        const checking = await users.findOne({ where: { phone: value } });
+        if (checking) {
+          return promise.reject();
+        }
+      })
+      .withMessage("The phone number alredy exist"),
+
+    body("jenis_kelamin")
+      .toLowerCase()
+      .isIn(["laki-laki", "perempuan"])
+      .withMessage("The gender invalid ex: laki-laki / perempuan"),
+
+    body("status")
+      .toLowerCase()
+      .isIn(["admin", "seller", "buyer"])
+      .withMessage("The status user invalid"),
 
     (req, res, next) => {
       const error = validationResult(req);
