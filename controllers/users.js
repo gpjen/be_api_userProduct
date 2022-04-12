@@ -2,13 +2,12 @@
 const bcrypt = require("bcrypt");
 
 // IMPORT MODELS
-const { users } = require("../models");
+const { users, sequelize } = require("../models");
 
 // register CREATE
-exports.userRegister = async (req, res) => {
+exports.userRegister = async (req, res, next) => {
   try {
     const newData = req.body;
-    newData.status = newData.status || "buyer";
 
     // HASH PASSWORD
     const salt = await bcrypt.genSalt(10);
@@ -18,25 +17,22 @@ exports.userRegister = async (req, res) => {
     const newUser = await users.create(newData);
     res.status(201).json({
       status: "success",
-      message: `${newUser.name} registered successfully`,
+      message: `${newUser.email} registered successfully`,
     });
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({
-      status: "failed",
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // login
 
 // get users
-exports.getUsers = async (req, res) => {
+exports.getUsers = async (req, res, next) => {
   try {
     const data = await users.findAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "isDelete"],
+        exclude: ["createdAt", "updatedAt", "isDelete", "password"],
       },
     });
 
@@ -52,13 +48,30 @@ exports.getUsers = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).json({
-      status: "failed",
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-// get user by Id
+// get user by Id/email/phone
+exports.getUserById = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const data = await users.findOne({
+      where: { id },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password", "isDelete"],
+      },
+    });
+
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
 
 // delete user by id
