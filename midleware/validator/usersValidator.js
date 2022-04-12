@@ -1,5 +1,5 @@
 // IMPORT PACKAGE
-const { promise } = require("bcrypt/promises");
+const { promise, reject } = require("bcrypt/promises");
 const { body, param, validationResult } = require("express-validator");
 
 //IMPORT MODELS
@@ -64,6 +64,23 @@ module.exports = {
       .isIn(["admin", "seller", "buyer"])
       .withMessage("The status user invalid"),
 
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty())
+        return res.status(422).json({
+          status: "failed",
+          data: error.errors,
+        });
+      next();
+    },
+  ],
+  validationOneParamsId: [
+    param("id")
+      .notEmpty()
+      .withMessage("Id is required")
+      .bail()
+      .isNumeric()
+      .withMessage("Id must be a number"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty())
