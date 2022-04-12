@@ -3,7 +3,7 @@ const router = express.Router();
 
 //VALIDATION
 const {
-  registerValidation,
+  validationRegis,
   validationOneParamsId,
 } = require("../midleware/validator/usersValidator");
 
@@ -20,7 +20,7 @@ const {
 router.get("/users", getUsers);
 router.get("/user/:id", validationOneParamsId, getUserById);
 router.patch("/user/:id", updateUser);
-router.post("/register", registerValidation, userRegister);
+router.post("/register", validationRegis, userRegister);
 router.post("/login", userLogin);
 router.delete("/user/:id", validationOneParamsId, delUserById);
 

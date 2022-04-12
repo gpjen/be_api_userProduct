@@ -7,7 +7,7 @@ const { users } = require("../../models");
 
 // FUNCTION VALIDATION
 module.exports = {
-  registerValidation: [
+  validationRegis: [
     body("name")
       .notEmpty()
       .withMessage("The name cant empty")
@@ -43,8 +43,14 @@ module.exports = {
       ),
 
     body("phone")
-      .matches(/^[0-9\+-]+\.?\s?([0-9]+\.?\s?)+$/)
+      .notEmpty()
+      .withMessage("phone number is required")
+      .bail()
+      .matches(/^[0-9\+-]+\s?([0-9]+\s?)+$/)
       .withMessage("phone number isnt valid")
+      .bail()
+      .isLength({ min: 10 })
+      .withMessage("phone number to sort, min: 10")
       .bail()
       .custom(async (value) => {
         const checking = await users.findOne({ where: { phone: value } });

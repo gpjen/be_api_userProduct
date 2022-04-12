@@ -29,12 +29,15 @@ exports.userRegister = async (req, res, next) => {
 // login
 exports.userLogin = async (req, res, next) => {
   const { password } = req.body;
-  const email = req.body.email || "";
-  const phone = req.body.phone || "";
+  const email = req.body.emailOrPhone;
+  const phone = req.body.emailOrPhone;
   try {
     const data = await users.findOne({
       where: {
         [Op.or]: [{ email }, { phone }],
+      },
+      attributes: {
+        exclude: ["updatedAt", "createdAt", "password", "isDelete"],
       },
     });
 
